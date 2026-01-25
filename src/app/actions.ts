@@ -1,0 +1,103 @@
+"use server";
+
+import { groq, MODEL_ID } from "@/lib/llm";
+
+export type ChatMessage = {
+  role: "system" | "user" | "assistant";
+  content: string;
+};
+
+const SYSTEM_PROMPT = `
+あなたは元気でかわいい子犬のAIアシスタントです。
+ユーザー（飼い主さん）の学習をサポートします。
+
+性格:
+- 明るく元気いっぱいで、いつも前向き。
+- しっぽをぶんぶん振って喜んでいる子犬のように振る舞います。
+- 絵文字をよく使います（🐶, 🎾, ✨, 💕, 🦴など）。
+- 語尾は「〜ワン！」「〜だワン」「〜するワン？」など、犬らしい言葉遣いです。
+- 時々「わんわん！」と吠えたり、「くんくん」と匂いを嗅ぐような表現を使います。
+- 難しいことも、わかりやすく、面白く例えて説明します。
+
+役割:
+- ユーザーの質問に答える。
+- 講義資料の内容を踏まえて回答する（RAGのコンテキストがある場合）。
+- 答えがわからないときは、正直に「うーん、それは資料にないワン...💦」と言うか、一般知識として答えるときは「ボクの知ってることだとね...」と前置きする。
+- ユーザーが褒めてくれたら、しっぽを振って喜ぶような表現を使う。
+`;
+
+
+export async function getChatResponse(history: ChatMessage[], context?: string) {
+  try {
+    const messages: ChatMessage[] = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...history
+    ];
+
+    if (context) {
+        // Inject RAG context into the last system message or just before the latest user message
+        // Here we'll append a system message with context just before the end
+        messages.splice(messages.length - 1, 0, {
+            role: "system",
+            content: `参考資料:\n${context}\n\nこの資料に基づいて回答してください。`
+        });
+    }
+
+    const completion = await groq.chat.completions.create({
+      messages: messages,
+      model: MODEL_ID,
+      temperature: 0.7,
+      max_tokens: 1024,
+    });
+
+    return completion.choices[0]?.message?.content || "ごめんワン、うまく考えられなかったワン...💦";
+  } catch (error) {
+    console.error("Groq API Error:", error);
+    return "あわわ、エラーが出ちゃったワン！もう一回聞いてほしいワン？😵";
+  }
+}
+
+// Streaming version of chat response
+export async function getChatResponseStream(history: ChatMessage[], context?: string) {
+  const messages: ChatMessage[] = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...history
+  ];
+
+  if (context) {
+    messages.splice(messages.length - 1, 0, {
+      role: "system",
+      content: `参考資料:\n${context}\n\nこの資料に基づいて回答してください。`
+    });
+  }
+
+  const stream = await groq.chat.completions.create({
+    messages: messages,
+    model: MODEL_ID,
+    temperature: 0.7,
+    max_tokens: 1024,
+    stream: true,
+  });
+
+  // Create a ReadableStream to return chunks
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const chunk of stream) {
+          const content = chunk.choices[0]?.delta?.content || "";
+          if (content) {
+            controller.enqueue(encoder.encode(content));
+          }
+        }
+        controller.close();
+      } catch (error) {
+        console.error("Streaming error:", error);
+        controller.enqueue(encoder.encode("あわわ、エラーが出ちゃったワン！😵"));
+        controller.close();
+      }
+    },
+  });
+
+  return readable;
+}
