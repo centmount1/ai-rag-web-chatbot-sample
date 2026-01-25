@@ -1,6 +1,6 @@
 "use server";
 
-import { groq, MODEL_ID } from "@/lib/llm";
+import { getGroqClient, MODEL_ID } from "@/lib/llm";
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -43,6 +43,7 @@ export async function getChatResponse(history: ChatMessage[], context?: string) 
         });
     }
 
+    const groq = getGroqClient();
     const completion = await groq.chat.completions.create({
       messages: messages,
       model: MODEL_ID,
@@ -71,6 +72,7 @@ export async function getChatResponseStream(history: ChatMessage[], context?: st
     });
   }
 
+  const groq = getGroqClient();
   const stream = await groq.chat.completions.create({
     messages: messages,
     model: MODEL_ID,
