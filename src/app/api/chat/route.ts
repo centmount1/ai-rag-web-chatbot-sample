@@ -42,9 +42,12 @@ export async function POST(request: NextRequest) {
 
     const { history, context }: { history: ChatMessage[]; context?: string } = await request.json();
 
+    // Strip any extra properties (like sources) - Groq only accepts role and content
+    const cleanedHistory: ChatMessage[] = history.map(({ role, content }) => ({ role, content }));
+
     const messages: ChatMessage[] = [
       { role: "system", content: SYSTEM_PROMPT },
-      ...history
+      ...cleanedHistory
     ];
 
     if (context) {
