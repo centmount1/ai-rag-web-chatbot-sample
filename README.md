@@ -109,55 +109,53 @@ Next.js 16 (App Router)、Groq API、IndexedDB、Transformers.js を使用した
 
 ## 📂 フォルダ構成
 
-\`\`\`
-ai-chatbot-sample/
-├── public/                      # 静的ファイル
-│   └── dog_3d.gif              # 犬キャラクターアニメーション
-│
+```
+ai-rag-web-chatbot-sample/
+├── public/                        # 静的ファイル
+│   └── dog_3d.gif                 # 犬キャラクターアニメーション
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── page.tsx            # メインページ (チャットUI)
-│   │   ├── actions.ts          # Server Actions (Groq API呼び出し)
-│   │   ├── globals.css         # グローバルスタイル
-│   │   ├── layout.tsx          # ルートレイアウト
+│   ├── app/                       # Next.js App Router
+│   │   ├── layout.tsx             # ルートレイアウト
+│   │   ├── page.tsx               # メインページ (チャットUI)
+│   │   ├── actions.ts             # Server Actions (Groq API呼び出し)
+│   │   ├── globals.css            # グローバルスタイル
 │   │   └── api/
-│   │       ├── chat/route.ts   # チャットAPI (ストリーミング対応)
-│   │       └── config/route.ts # 設定API (サーバーキー確認)
-│   │
-│   ├── components/             # Reactコンポーネント
-│   │   ├── Character.tsx       # キャラクターコンポーネント
-│   │   ├── ApiKeySettings.tsx  # APIキー設定モーダル
-│   │   ├── DocumentViewer.tsx  # ドキュメント閲覧モーダル
-│   │   └── PdfViewer.tsx       # PDFビューワー (ページ指定対応)
-│   │
-│   ├── hooks/                  # カスタムフック
-│   │   └── use-speech.ts       # 音声認識・音声合成フック (STT/TTS)
-│   │
-│   ├── lib/                    # ユーティリティライブラリ
-│   │   ├── db.ts               # IndexedDB操作 (ドキュメント・チャンク・PDF保存)
-│   │   ├── embeddings.ts       # Transformers.js による埋め込み生成
-│   │   ├── llm.ts              # Groq API クライアント設定
-│   │   ├── pdf.ts              # PDF テキスト抽出 (ページ情報付き)
-│   │   ├── rag.ts              # RAGロジック (チャンク分割、検索、PDF対応)
-│   │   ├── rag-actions.ts      # Server Actions (埋め込み生成)
-│   │   └── utils.ts            # ユーティリティ関数
-│   │
-│   └── types/                  # 型定義
-│       └── speech.d.ts         # Web Speech API 型定義
-│
-├── docs/                       # ドキュメント
-│   ├── task.md                 # タスク一覧
-│   ├── implementation_plan.md  # 実装計画
-│   └── walkthrough.md          # 検証手順
-│
-├── .env.local                  # 環境変数 (GROQ_API_KEY) - オプション
-├── package.json                # 依存関係
-├── tsconfig.json               # TypeScript設定
-├── next.config.ts              # Next.js設定
-├── Dockerfile                  # Dockerイメージ定義
-├── docker-compose.yml          # Docker Compose設定
-└── README.md                   # このファイル
-\`\`\`
+│   │       ├── chat/
+│   │       │   └── route.ts       # チャットAPI (ストリーミング対応)
+│   │       └── config/
+│   │           └── route.ts       # 設定API (サーバーキー確認)
+│   ├── components/                # React コンポーネント
+│   │   ├── ApiKeySettings.tsx     # APIキー設定モーダル
+│   │   ├── Character.tsx          # キャラクターコンポーネント
+│   │   ├── DocumentViewer.tsx     # ドキュメント閲覧モーダル
+│   │   └── PdfViewer.tsx          # PDFビューワー (ページ指定対応)
+│   ├── hooks/                     # カスタムフック
+│   │   └── use-speech.ts          # 音声認識・音声合成フック (STT/TTS)
+│   ├── lib/                       # ユーティリティライブラリ
+│   │   ├── db.ts                  # IndexedDB操作 (ドキュメント・チャンク・PDF保存)
+│   │   ├── embeddings.ts          # Transformers.js による埋め込み生成
+│   │   ├── llm.ts                 # Groq API クライアント設定
+│   │   ├── pdf.ts                 # PDF テキスト抽出 (ページ情報付き)
+│   │   ├── rag.ts                 # RAGロジック (チャンク分割、検索、PDF対応)
+│   │   ├── rag-actions.ts         # Server Actions (埋め込み生成)
+│   │   └── utils.ts               # ユーティリティ関数
+│   └── types/                     # 型定義
+│       └── speech.d.ts            # Web Speech API 型定義
+├── docs/                          # ドキュメント
+│   ├── implementation_plan.md     # 実装計画
+│   ├── task.md                    # タスク一覧
+│   └── walkthrough.md             # 検証手順
+├── .env.local                     # 環境変数 (GROQ_API_KEY) - オプション
+├── docker-compose.yml             # Docker Compose設定
+├── Dockerfile                     # Dockerイメージ定義
+├── eslint.config.mjs              # ESLint設定
+├── next.config.ts                 # Next.js設定
+├── next-env.d.ts                  # Next.js 型定義
+├── package.json                   # 依存関係
+├── postcss.config.mjs             # PostCSS設定
+├── tsconfig.json                  # TypeScript設定
+└── README.md                      # このファイル
+```
 
 ---
 
